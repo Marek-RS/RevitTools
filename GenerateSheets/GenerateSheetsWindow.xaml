@@ -1,0 +1,433 @@
+﻿<Window x:Class="TTTRevitTools.GenerateSheets.GenerateSheetsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TTTRevitTools.GenerateSheets"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        Title="GenerateSheetsWindow" Height="700" MinHeight="700" Width="650" MinWidth="650">
+    <Window.Resources>
+        <ObjectDataProvider x:Key="DataFromNamingRulesEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:ParameterOption"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="DataFromViewPortEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:ViewPortName"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+    <Grid>
+        <TabControl x:Name="MainTabControl">
+            <TabItem Header="Create Views" TabIndex="0">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="180"></RowDefinition>
+                        <RowDefinition Height="70"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <GroupBox BorderBrush="Gray">
+                        <GroupBox.Header>
+                            Select rooms:
+                        </GroupBox.Header>
+                        <Grid>
+                            <DataGrid x:Name="RoomSelectionDataGrid" Margin="10,10,10,40" Visibility="Hidden" LoadingRow="RoomSelectionDataGrid_LoadingRow" UnloadingRow="RoomSelectionDataGrid_LoadingRow" MouseDoubleClick="RoomSelectionDataGrid_MouseDoubleClick" CanUserAddRows="False" SelectionMode="Extended" SelectionUnit="FullRow" GridLinesVisibility="None" ItemsSource="{Binding Rooms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HeadersVisibility="Column" BorderThickness="0" Background="White" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="IsSelected">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox Checked="RoomCheckBox_Checked" Unchecked="RoomCheckBox_Unchecked" IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"></CheckBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Room No." Binding="{Binding Room.Number}" IsReadOnly="True">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Room Name" Binding="{Binding Name}" IsReadOnly="True">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="View Name" Binding="{Binding ViewName}" IsReadOnly="True" Width="*">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="SheetView Status" Binding="{Binding SheetViewStatus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" Width="*">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                                <Setter Property="FontWeight" Value="Bold"></Setter>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                </DataGrid.Columns>
+                                <DataGrid.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="Height" Value="25"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                    </Style>
+                                </DataGrid.CellStyle>
+                                <DataGrid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem x:Name="MenuItemOpen" Header="Open sheet and associated views" Click="MenuItemOpen_Click" />
+                                        <MenuItem x:Name="MenuItemDelete" Header="Delete sheet and associated views" Click="MenuItemDelete_Click" />
+                                    </ContextMenu>
+                                </DataGrid.ContextMenu>
+                            </DataGrid>
+                            <Label x:Name="InfoLabel" Content="Load Views to add Rooms" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+                            <Button Content="Load Views" VerticalAlignment="Bottom" Margin="10" Click="BtnClickAddViews"></Button>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox BorderBrush="Gray" Grid.Row="1">
+                        <GroupBox.Header>
+                            Select output view types:
+                        </GroupBox.Header>
+                        <DataGrid x:Name="ViewTypesDataGrid" ItemsSource="{Binding ViewTypes}" GridLinesVisibility="None" Margin="10" HeadersVisibility="Column" Background="White" AutoGenerateColumns="False" CanUserAddRows="False">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="Is Selected">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Name" Binding="{Binding ViewType}" Width="*" IsReadOnly="True">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTemplateColumn Width="*" Header="View FamilyType">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox ItemsSource="{Binding ViewFamilyTypes}" SelectionChanged="ComBoxViewFamilyTypes_SelectionChanged" DisplayMemberPath="Name" SelectedIndex="0"></ComboBox>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Width="*" Header="View Template">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox ItemsSource="{Binding ViewTemplates}" SelectionChanged="ComBoxViewTemplates_SelectionChanged" DisplayMemberPath="Name" SelectedIndex="{Binding PreSelectedTemplateIndex}"></ComboBox>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                            <DataGrid.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="Height" Value="25"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                </Style>
+                            </DataGrid.CellStyle>
+                        </DataGrid>
+                    </GroupBox>
+                    <GroupBox BorderBrush="Gray" Grid.Row="2">
+                        <GroupBox.Header>
+                            Create Views and Sheets
+                        </GroupBox.Header>
+                        <Grid>
+                            <Button Content="Create Views and Sheets" Margin="5" Click="BtnClick_CreateViewsAndSheets" VerticalAlignment="Center"></Button>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Parameter Settings" TabIndex="1">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+
+                    </Grid.RowDefinitions>
+                    <GroupBox BorderBrush="Gray">
+                        <GroupBox.Header>
+                            ViewSheet Parameters
+                        </GroupBox.Header>
+                        <DataGrid x:Name="ViewParametersDataGrid" ItemsSource="{Binding ViewSheetParameters}" Margin="5" CanUserAddRows="False" HeadersVisibility="Column" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Parameter Name" Binding="{Binding Name}" IsReadOnly="True"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Fixed Value" Width="*" Binding="{Binding Value}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Storage Type" Binding="{Binding StorageType}" IsReadOnly="True"></DataGridTextColumn>
+                                <DataGridTextColumn Header="IsShared" Binding="{Binding IsShared}" IsReadOnly="True"></DataGridTextColumn>
+
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                    <GroupBox BorderBrush="Gray" Grid.Row="1">
+                        <GroupBox.Header>
+                            Title Block Parameters
+                        </GroupBox.Header>
+                        <DataGrid x:Name="TitleBlockParametersDataGrid" ItemsSource="{Binding TitleBlockParameters}" Margin="5" CanUserAddRows="False" HeadersVisibility="Column" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Parameter Name" Binding="{Binding Name}" IsReadOnly="True"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Fixed Value" Width="*" Binding="{Binding Value}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Storage Type" Binding="{Binding StorageType}" IsReadOnly="True"></DataGridTextColumn>
+                                <DataGridTextColumn Header="IsShared" Binding="{Binding IsShared}" IsReadOnly="True"></DataGridTextColumn>
+
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                    <Button Content="Save Parameter Values" Grid.Row="2" Margin="10,5" Click="BtnClick_SaveParameterValues_ViewSheet_TitleBlock"></Button>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Naming Rules" TabIndex="2">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="265"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <GroupBox BorderBrush="Gray">
+                        <GroupBox.Header>
+                            Naming Rules
+                        </GroupBox.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition Height="30"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <DataGrid x:Name="NamingDataGrid" CanUserSortColumns="False" SelectionMode="Single" SelectionUnit="Cell" HeadersVisibility="Column" ItemsSource="{Binding ViewNamingRules}" Margin="5,5,5,0" CellEditEnding="NamingDataGrid_CellEditEnding" AutoGenerateColumns="False" CanUserAddRows="False" Background="White">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Naming Rule" Binding="{Binding RuleName}" IsReadOnly="True" CanUserReorder="False"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Prefix" Binding="{Binding Prefix}" CanUserReorder="False"></DataGridTextColumn>
+                                    <DataGridTemplateColumn Header="Parameter1" CanUserReorder="False">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox SelectionChanged="ComboBox_P1_SelectionChanged" ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
+                                                                                                                                AncestorType={x:Type Window}}, 
+                                                                                                                                Path=DataContext.SelectableParameters}" DisplayMemberPath="Name" SelectedIndex="{Binding Path=Parameter1.Index}"></ComboBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Text" Binding="{Binding Break1}" CanUserReorder="False">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTemplateColumn Header="Parameter2" CanUserReorder="False">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox SelectionChanged="ComboBox_P2_SelectionChanged" ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
+                                                                                                                                AncestorType={x:Type Window}}, 
+                                                                                                                                Path=DataContext.SelectableParameters}" DisplayMemberPath="Name" SelectedIndex="{Binding Path=Parameter2.Index}"></ComboBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Text" Binding="{Binding Break2}" CanUserReorder="False">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTemplateColumn Header="Parameter3" CanUserReorder="False">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox SelectionChanged="ComboBox_P3_SelectionChanged" ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
+                                                                                                                                AncestorType={x:Type Window}}, 
+                                                                                                                                Path=DataContext.SelectableParameters}" DisplayMemberPath="Name" SelectedIndex="{Binding Path=Parameter3.Index}"></ComboBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Text" Binding="{Binding Break3}" CanUserReorder="False">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTemplateColumn Header="Parameter4" CanUserReorder="False">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox SelectionChanged="ComboBox_P4_SelectionChanged" ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
+                                                                                                                                AncestorType={x:Type Window}}, 
+                                                                                                                                Path=DataContext.SelectableParameters}" DisplayMemberPath="Name" SelectedIndex="{Binding Path=Parameter4.Index}"></ComboBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Suffix" Binding="{Binding Suffix}" CanUserReorder="False"></DataGridTextColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <Button x:Name="BtnSaveChanges" Content="Save Naming Rules" IsEnabled="False" Grid.Row="1" Margin="5" Click="BtnClick_SaveChanges"></Button>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox BorderBrush="Gray" Grid.Row="1" Margin="0,10,0,0">
+                        <GroupBox.Header>
+                            Parameter Name Modifiers
+                        </GroupBox.Header>
+                        <Grid>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition Height="30"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <DataGrid x:Name="ParameterSubstringDataGrid" ItemsSource="{Binding ParameterSubstrings}" Margin="5,5,5,50" SelectionMode="Single" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="Substring (Index from/to)" Width="2*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox ItemsSource="{Binding Source={StaticResource DataFromNamingRulesEnum}}" SelectedItem="{Binding ParameterOption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Start Index*" Binding="{Binding StartIndex}" Width="*"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="End Index**" Binding="{Binding EndIndex}" Width="*"></DataGridTextColumn>
+                                </DataGrid.Columns>
+                                <DataGrid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem x:Name="MenuItemAddRowSubstring" Header="Add new modifier rule" Click="MenuItemAddRow_Click"/>
+                                        <MenuItem x:Name="MenuItemDeleteRowSubstring" Header="Remove selected modifier rule" Click="MenuItemDeleteRowSubstring_Click"/>
+                                    </ContextMenu>
+                                </DataGrid.ContextMenu>
+                            </DataGrid>
+                            <Label Content="*  '0' index represents the first character of a string" VerticalAlignment="Bottom" Margin="0,20"></Label>
+                            <Label Content="** if the input is greater than last index of modified text, last index will be applied" VerticalAlignment="Bottom"></Label>
+                            <DataGrid x:Name="ParameterFindReplaceDataGrid" ItemsSource="{Binding FindReplaceParameters}" Margin="5,5,5,30" SelectionMode="Single" AutoGenerateColumns="False" Grid.Row="1" CanUserAddRows="False" HeadersVisibility="Column">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="Find/Replace String" Width="2*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox ItemsSource="{Binding Source={StaticResource DataFromNamingRulesEnum}}" SelectedItem="{Binding ParameterOption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Old Text" Binding="{Binding OldText}" Width="*"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="New Text" Binding="{Binding NewText}" Width="*"></DataGridTextColumn>
+                                </DataGrid.Columns>
+                                <DataGrid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem x:Name="MenuItemAddRowFindReplace" Header="Add new modifier rule" Click="MenuItemAddRowFindReplace_Click" />
+                                        <MenuItem x:Name="MenuItemDeleteRowFindReplace" Header="Remove selected modifier rule" Click="MenuItemDeleteRowFindReplace_Click"/>
+                                    </ContextMenu>
+                                </DataGrid.ContextMenu>
+                            </DataGrid>
+                            <CheckBox x:Name="UseModifiersCheckBox" IsChecked="{Binding ViewSheetSettings.UseParameterModifiers}" Content="Use modifiers in current project" Grid.Row="1" VerticalAlignment="Bottom" Margin="5"></CheckBox>
+                            <Button x:Name="BtnSaveModifiers" Content="Save Parameter Name Modifiers" Grid.Row="2" Margin="5" Click="BtnSaveModifiers_Click"></Button>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Settings" TabIndex="3">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="170"></RowDefinition>
+                        <RowDefinition Height="180"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <GroupBox BorderBrush="Gray">
+                        <GroupBox.Header>
+                            Sheet View Order
+                        </GroupBox.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+
+                            <Label Content="Top view line:"></Label>
+                            <Label Content="Bottom view line:" Grid.Column="1"></Label>
+
+                            <ComboBox VerticalAlignment="Top" Margin="5, 30, 5, 5" ItemsSource="{Binding Source={StaticResource DataFromViewPortEnum}}" SelectionChanged="ComboBox_SelectionChanged" SelectedItem="{Binding Path=ViewSheetSettings.TopViewLine1}"></ComboBox>
+                            <ComboBox VerticalAlignment="Top" Margin="5, 55, 5, 5" ItemsSource="{Binding Source={StaticResource DataFromViewPortEnum}}" SelectionChanged="ComboBox_SelectionChanged" SelectedItem="{Binding Path=ViewSheetSettings.TopViewLine2}"></ComboBox>
+                            <ComboBox VerticalAlignment="Top" Margin="5, 80, 5, 5" ItemsSource="{Binding Source={StaticResource DataFromViewPortEnum}}" SelectionChanged="ComboBox_SelectionChanged" SelectedItem="{Binding Path=ViewSheetSettings.TopViewLine3}"></ComboBox>
+                            <ComboBox VerticalAlignment="Top" Margin="5, 105, 5, 5" ItemsSource="{Binding Source={StaticResource DataFromViewPortEnum}}" SelectionChanged="ComboBox_SelectionChanged" SelectedItem="{Binding Path=ViewSheetSettings.TopViewLine4}"></ComboBox>
+
+                            <ComboBox VerticalAlignment="Top" Margin="5, 30, 5, 5" ItemsSource="{Binding Source={StaticResource DataFromViewPortEnum}}" Grid.Column="1" SelectionChanged="ComboBox_SelectionChanged" SelectedItem="{Binding Path=ViewSheetSettings.BottomViewLine1}"></ComboBox>
+                            <ComboBox VerticalAlignment="Top" Margin="5, 55, 5, 5" ItemsSource="{Binding Source={StaticResource DataFromViewPortEnum}}" Grid.Column="1" SelectionChanged="ComboBox_SelectionChanged" SelectedItem="{Binding Path=ViewSheetSettings.BottomViewLine2}"></ComboBox>
+                            <ComboBox VerticalAlignment="Top" Margin="5, 80, 5, 5" ItemsSource="{Binding Source={StaticResource DataFromViewPortEnum}}" Grid.Column="1" SelectionChanged="ComboBox_SelectionChanged" SelectedItem="{Binding Path=ViewSheetSettings.BottomViewLine3}"></ComboBox>
+                            <ComboBox VerticalAlignment="Top" Margin="5, 105, 5, 5" ItemsSource="{Binding Source={StaticResource DataFromViewPortEnum}}" Grid.Column="1" SelectionChanged="ComboBox_SelectionChanged" SelectedItem="{Binding Path=ViewSheetSettings.BottomViewLine4}"></ComboBox>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox BorderBrush="Gray" Grid.Row="1">
+                        <GroupBox.Header>
+                            Title Block Settings
+                        </GroupBox.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="TitleBlock family:" VerticalAlignment="Top" Margin="5,5,200,0"></Label>
+                            <ComboBox x:Name="ComBoxTitleBlocks" VerticalAlignment="Top" Margin="110,5,5,0" ItemsSource="{Binding TitleBlocks}" DisplayMemberPath="Name" SelectionChanged="ComboBox_SelectionChanged" Height="26"></ComboBox>
+                            <RadioButton x:Name="RadBtnCreateNewSizes" Checked="RadBtn_Checked_Unchecked" Unchecked="RadBtn_Checked_Unchecked" IsChecked="{Binding ViewSheetSettings.CreateNewSizes}" Content="create title block new sizes" Margin="10,45,10,0" VerticalAlignment="Top"/>
+                            <RadioButton x:Name="RadBtnUseExistingSizes" Checked="RadBtn_Checked_Unchecked" Unchecked="RadBtn_Checked_Unchecked" IsChecked="{Binding ViewSheetSettings.UseExistingSizes}" Content="use existing title block sizes" Margin="10,70,10,0" VerticalAlignment="Top"/>
+
+                            <Label Content="TitleBlock Min. Margins:" VerticalAlignment="Top" Margin="5" Grid.Column="1"></Label>
+                            <Label Content="Top [mm]:" VerticalAlignment="Top" Margin="5,35,0,0" Grid.Column="1" HorizontalAlignment="Left" Height="25" Width="112"></Label>
+                            <TextBox x:Name="TopOffset" TextChanged="OffsetBox_Changed" Text="{Binding ViewSheetSettings.TopOffset, StringFormat=N0}" VerticalContentAlignment="Center" VerticalAlignment="Top" Grid.Column="1" Margin="152,35,5,0" Height="25"/>
+                            <Label Content="Bottom [mm]:" VerticalAlignment="Top" Margin="5,65,0,0" Grid.Column="1" HorizontalAlignment="Left" Width="112"></Label>
+                            <TextBox x:Name="BottomOffset" TextChanged="OffsetBox_Changed" Text="{Binding ViewSheetSettings.BottomOffset, StringFormat=N0}" VerticalContentAlignment="Center" VerticalAlignment="top" Grid.Column="1" Margin="152,65,5,0" Height="25"/>
+                            <Label Content="Left [mm]:" VerticalAlignment="Top" Margin="5,95,0,0" Grid.Column="1" HorizontalAlignment="Left" Width="112"></Label>
+                            <TextBox x:Name="LeftOffset" TextChanged="OffsetBox_Changed" Text="{Binding ViewSheetSettings.LeftOffset, StringFormat=N0}" VerticalContentAlignment="Center" VerticalAlignment="Top" Grid.Column="1" Margin="152,95,5,0" Height="25"/>
+                            <Label Content="Right [mm]:" VerticalAlignment="Top" Margin="5,125,0,0" Grid.Column="1" HorizontalAlignment="Left" Width="112"/>
+                            <TextBox x:Name="RightOffset" TextChanged="OffsetBox_Changed" Text="{Binding ViewSheetSettings.RightOffset, StringFormat=N0}" VerticalContentAlignment="Center" VerticalAlignment="Top" Grid.Column="1" Margin="152,125,5,0" Height="25"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox BorderBrush="Gray" Grid.Row="2">
+                        <GroupBox.Header>
+                            View/Sheet Settings
+                        </GroupBox.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition Height="30"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Button x:Name="BtnSaveSettings" Content="Save Settings" IsEnabled="False" Grid.Row="1" Grid.ColumnSpan="2" Margin="5" Click="BtnCick_SaveViewPorts"></Button>
+                            <Label Content="Viewport type:" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,5,0,0" Grid.ColumnSpan="2"></Label>
+                            <ComboBox x:Name="ComBoxViewports" VerticalAlignment="Top" Margin="100,5,5,0" ItemsSource="{Binding ViewPorts}" DisplayMemberPath="Name" SelectionChanged="ComboBox_SelectionChanged" Height="26"/>
+
+                            <Label Content="Distance between viewports: [mm]:" VerticalAlignment="Top" Margin="5,35,105,0"/>
+                            <TextBox x:Name="ViewPortDistance" TextChanged="OffsetBox_Changed" Text="{Binding ViewSheetSettings.ViewportDistance, StringFormat=N0}" VerticalContentAlignment="Center" Margin="205,35,5,0" Height="26" VerticalAlignment="Top"/>
+
+                            <Label Content="View Scale:" VerticalAlignment="Top" Margin="5,5,215,0" Grid.Column="1"/>
+                            <ComboBox x:Name="ComBoxViewScale" Grid.Column="1" ItemsSource="{Binding ViewScales}" SelectedIndex="{Binding ViewSheetSettings.ViewScaleSelectedIndex}" VerticalAlignment="Top" Margin="100,5,5,0" SelectionChanged="ComboBox_SelectionChanged" Height="26"/>
+                            <CheckBox x:Name="ChckBoxViewScale" Grid.Column="1" IsChecked="{Binding ViewSheetSettings.OverrideScaleInTemplate}" Checked="ChckBoxViewScale_Changed" Unchecked="ChckBoxViewScale_Changed" Content="Override view scale in templates" VerticalAlignment="Top" Margin="10,40,5,0"/>
+
+                            <TextBox x:Name="VerticalOffsetLbl" TextChanged="OffsetBox_Changed" VerticalAlignment="Top" Margin="205,97,5,0" Height="26" Text="{Binding ViewSheetSettings.RoomBoxVerOffset}"/>
+                            <Label Content="RoomBox offset (vertical) [mm]:" VerticalAlignment="Top" Margin="5,97,115,0"/>
+
+                            <TextBox x:Name="HorizontalOffsetLbl" TextChanged="OffsetBox_Changed" VerticalAlignment="Top" Margin="205,66,5,0" Height="26" Text="{Binding ViewSheetSettings.RoomBoxHorOffset}"/>
+                            <Label Content="RoomBox offset (horizontal) [mm]:" VerticalAlignment="Top" Margin="5,66,115,0"/>
+
+                            <CheckBox IsChecked="{Binding ViewSheetSettings.AddBoundarySegments}" Checked="RadBtn_Checked_Unchecked" Unchecked="RadBtn_Checked_Unchecked" Content="Add boundary segments to room bounding box" VerticalAlignment="Top" Margin="5,135,0,0"></CheckBox>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Import/Export" TabIndex="4">
+                <Grid Margin="5">
+                    <GroupBox BorderBrush="Gray" Grid.Row="1">
+                        <GroupBox.Header>
+                            Import/Export Settings
+                        </GroupBox.Header>
+                        <Grid>
+                            <Button VerticalAlignment="Top" Margin="5,10" Height="23" Content="Import Json Settings" Click="BtnClick_ImportSettings"></Button>
+                            <Button VerticalAlignment="Top" Margin="5, 40" Height="23" Content="Export Json Settings" Click="BtnClick_ExportSettings"></Button>
+                        </Grid>
+                    </GroupBox>
+
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

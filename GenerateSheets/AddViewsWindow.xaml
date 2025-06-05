@@ -1,0 +1,24 @@
+﻿<Window x:Class="TTTRevitTools.GenerateSheets.AddViewsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TTTRevitTools.GenerateSheets"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        Closed="Window_Closed"
+        Title="AddViewsWindow" Height="450" Width="300">
+    <GroupBox BorderBrush="Gray" Margin="5">
+        <GroupBox.Header>
+            Add Views:
+        </GroupBox.Header>
+        <Grid x:Name="MainGrid" MouseLeftButtonDown="Grid_MouseLeftButtonDown" Focusable="True">
+            <TextBox x:Name="FilterBox" GotFocus="FilterBox_GotFocus" TextChanged="FilterBox_TextChanged" VerticalAlignment="Top" Margin="5" Text="Filter" Foreground="Gray"></TextBox>
+            <DataGrid x:Name="AddViewsDataGrid" Margin="5,28,5,5" MouseLeftButtonDown="AddViewsDataGrid_MouseLeftButtonDown" ItemsSource="{Binding PlanViews, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MouseDoubleClick="DataGrid_MouseDoubleClick" AutoGenerateColumns="false" SelectionMode="Single" HeadersVisibility="Column" CanUserAddRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Width="*" Header="View Name" Binding="{Binding Name}" IsReadOnly="True"></DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </GroupBox>
+</Window>
