@@ -1,0 +1,63 @@
+﻿<Window x:Class="TTTRevitTools.GridReference.GridReferenceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TTTRevitTools.GridReference"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="GridReferenceWindow" Height="600" Width="900">
+    <Window.Resources>
+        <ObjectDataProvider x:Key="DataFromPointType" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:PointType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="DataFromGridSearchOptions" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:GridSearchOptions"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+    <Grid Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="220"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Border BorderBrush="DarkGray" BorderThickness="1" Grid.ColumnSpan="2"></Border>
+        <DataGrid x:Name="SelectionGrid" ItemsSource="{Binding GridRefModels}" CanUserAddRows="False" AutoGenerateColumns="False" HeadersVisibility="Column">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ElementId" Binding="{Binding ElementId}" IsReadOnly="True"></DataGridTextColumn>
+                <DataGridTextColumn Header="Family Name" Binding="{Binding FamilyName}" IsReadOnly="True"></DataGridTextColumn>
+                <DataGridTextColumn Header="Family Type" Binding="{Binding FamilyType}" IsReadOnly="True"></DataGridTextColumn>
+                <DataGridTemplateColumn Header="Point Type">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding Source={StaticResource DataFromPointType}}" SelectedItem="{Binding SelectedType}"></ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Grid Reference" Binding="{Binding GridReference, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></DataGridTextColumn>
+                <DataGridTextColumn Header="System Info" Binding="{Binding SystemInfo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*"></DataGridTextColumn>
+            </DataGrid.Columns>
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="PointType: Bounding Box Middle" Click="MenuItemClick_SetBbox"></MenuItem>
+                    <MenuItem Header="PointType: Element Location Point" Click="MenuItemClick_SetLocationPoint"></MenuItem>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+        <StackPanel Grid.Column="1" Margin="5">
+            <Button Content="Add selected elements" Click="BtnClick_AddSelection" Margin="5"></Button>
+            <Label Margin="5,0" Content="Grid search options:"></Label>
+            <ComboBox ItemsSource="{Binding Source={StaticResource DataFromGridSearchOptions}}" SelectedItem="{Binding SearchOption}" Margin="5,0"></ComboBox>
+            <Button Content="Find nearest grids" Click="BtnClick_FindGrids" Margin="5"></Button>
+
+            <Label Margin="5,0" Content="Destination parameter:"></Label>
+            <TextBox Margin="5,0" Text="{Binding ParameterName}" HorizontalContentAlignment="Center"></TextBox>
+            
+            <Button Margin="5,10" Content="Add grid ref. value to parameter" Click="BtnClick_AddToParameter"></Button>
+            <Button Margin="5,10,5,5" Content="Clear List" Click="BtnClick_ClearList"></Button>
+        </StackPanel>
+    </Grid>
+</Window>
