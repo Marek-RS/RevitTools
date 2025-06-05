@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>TTT Revit Tools</Name>
+    <Assembly>TTTRevitTools.dll</Assembly>
+    <AddInId>BA9F1825-8290-4864-A783-24ED3735F811</AddInId>
+    <FullClassName>TTTRevitTools.App</FullClassName>
+    <VendorId>TTT</VendorId>
+    <VendorDescription>TTT</VendorDescription>
+  </AddIn>
+</RevitAddIns>
