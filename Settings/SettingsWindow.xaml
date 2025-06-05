@@ -1,0 +1,25 @@
+﻿<Window x:Class="TTTRevitTools.Settings.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TTTRevitTools.Settings"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        Title="SettingsWindow" Height="300" Width="250">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Border BorderBrush="DarkGray" BorderThickness="1"></Border>
+        <Border BorderBrush="DarkGray" BorderThickness="1" Grid.RowSpan="2"></Border>
+        <Image Source="/TTTRevitTools;component/Resources/TTT_logo_cut.png" Grid.Row="2" Margin="5"/>
+        <Label Content="Version Info:"></Label>
+        <Label x:Name="VersionLbl" Content="{Binding Version}" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"></Label>
+        <Label Content="Update Info:" Grid.Row="1"></Label>
+        <Button x:Name="UpdateButton" Grid.Row="1" Height="23" Margin="5,30,5,5" VerticalAlignment="Top" Content="Update Tools" IsEnabled="{Binding IsUpdateAvailable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Click="UpdateButton_Click"></Button>
+        <Label x:Name="UpdateInfoLbl" Grid.Row="1" Margin="5" VerticalAlignment="Bottom" Content="{Binding UpdateInfo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+    </Grid>
+</Window>
