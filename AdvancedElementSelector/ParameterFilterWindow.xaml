@@ -1,0 +1,29 @@
+﻿<Window x:Class="TTTRevitTools.AdvancedElementSelector.ParameterFilterWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TTTRevitTools.AdvancedElementSelector"
+        mc:Ignorable="d"
+        Closed="Window_Closed"
+        WindowStartupLocation="CenterOwner"
+        Title="ParameterFilterWindow" Height="600" Width="650">
+    <Grid Margin="5">
+        <Border BorderBrush="Black" BorderThickness="1"></Border>
+        <DataGrid x:Name="MainDataGrid" Margin="5" AutoGenerateColumns="False" ItemsSource="{Binding ElementParameters}" CellEditEnding="DataGrid_CellEditEnding">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Parameter Name" Binding="{Binding ParameterName}" IsReadOnly="True" Width="*"/>
+                <DataGridTemplateColumn Width="120" Header="Operator">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding Operators}" SelectionChanged="ComboBox_SelectionChanged"></ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Width="80" Header="Value" Binding="{Binding Value}"/>
+                <DataGridTextColumn Header="Storage Type" Binding="{Binding StorageType}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Display Unit" Binding="{Binding DisplayUnitType}" IsReadOnly="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

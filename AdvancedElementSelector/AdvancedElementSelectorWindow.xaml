@@ -1,0 +1,102 @@
+﻿<Window x:Class="TTTRevitTools.AdvancedElementSelector.AdvancedElementSelectorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TTTRevitTools.AdvancedElementSelector"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        Title="AdvancedElementSelectorWindow" Height="600" Width="500"
+        Initialized="Window_Initialized"
+        Closed="Window_Closed">
+    <Window.Resources>
+        <Style TargetType="{x:Type ListBoxItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter 
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    Content="{TemplateBinding Content}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    Margin="{TemplateBinding Padding}">
+                            </ContentPresenter>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <GroupBox BorderBrush="Gray" Margin="10">
+            <GroupBox.Header>
+                Advanced Element Selector
+            </GroupBox.Header>
+            <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" CanContentScroll="True" Focusable="True">
+                <ListBox x:Name="MainListBox" ItemsSource="{Binding MainExpanders, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0" SelectionMode="Extended"
+                                        ScrollViewer.VerticalScrollBarVisibility="Disabled" 
+                                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                        PreviewMouseWheel="MainListBox_MouseWheel">
+                    <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Expander ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="Transparent" Focusable="False">
+                            <Expander.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Parameter Filters" Click="MenuItem_Click"/>
+                                </ContextMenu>
+                            </Expander.ContextMenu>
+                            <Expander.Header>
+                                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" Checked="CheckBox_Checked_Category" Unchecked="CheckBox_Unchecked_Category">
+                                    <CheckBox.Content>
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0} ({1})">
+                                                    <Binding Path="ExpanderName" />
+                                                    <Binding Path="ItemsCount" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </CheckBox.Content>
+                                </CheckBox>
+                            </Expander.Header>
+                            <ListBox Focusable="False" ItemsSource="{Binding SubExpanders, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0" SelectionMode="Extended" Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=ActualWidth}"
+                                ScrollViewer.VerticalScrollBarVisibility="Disabled" 
+                                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                            <Expander ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" Focusable="False">
+                                            <Expander.Header>
+                                                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" Unchecked="CheckBox_Unchecked" Checked="CheckBox_Checked">
+                                                    <CheckBox.Content>
+                                                        <TextBlock>
+                                                            <TextBlock.Text>
+                                                                <MultiBinding StringFormat="{}{0} ({1})">
+                                                                    <Binding Path="ExpanderName" />
+                                                                    <Binding Path="ItemsCount" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" />
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
+                                                    </CheckBox.Content>
+                                                </CheckBox>
+                                            </Expander.Header>
+                                                <ListBox ItemsSource="{Binding SubExpanders, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Extended" BorderThickness="0" Background="Transparent" Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=ActualWidth}" DataContextChanged="ListBox_DataContextChanged"
+                                                ScrollViewer.VerticalScrollBarVisibility="Disabled" 
+                                                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                                    <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox Content="{Binding ExpanderName}" Margin="5" IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Checked="InstanceCheckBox_Checked" Unchecked="InstanceCheckBox_Unchecked"/>
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
+                                            </ListBox>
+                                        </Expander>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Expander>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            </ScrollViewer>
+        </GroupBox>
+    </Grid>
+</Window>

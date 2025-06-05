@@ -1,0 +1,28 @@
+﻿<Window x:Class="TTTRevitTools.AnnotationParameters.AnnotationParametersWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TTTRevitTools.AnnotationParameters"
+        mc:Ignorable="d"
+        Title="AnnotationParametersWindow" Height="450" Width="500">
+    <Grid Margin="6">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="150"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Border BorderThickness="1" BorderBrush="DarkGray"/>
+        <Border BorderThickness="1" BorderBrush="DarkGray" Grid.Column="1" Margin="-1,0,0,0"/>
+        <DataGrid Margin="5">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Shared Parameter"/>
+                <DataGridTextColumn Header="Value"/>
+                <DataGridTextColumn Header="Formula"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button Content="Add parameter" Grid.Column="1" VerticalAlignment="Top" Height="23" Margin="5"></Button>
+        <Button Content="Remove parameter" Grid.Column="1" VerticalAlignment="Top" Height="23" Margin="5,35,5,5"></Button>
+
+        <Button Content="Apply changes" Grid.Column="1" VerticalAlignment="Bottom" Height="23" Margin="5"></Button>
+    </Grid>
+</Window>
